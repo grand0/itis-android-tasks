@@ -47,7 +47,7 @@ class SecondFragment : Fragment(R.layout.fragment_second) {
 
                 beginTransaction()
                     .add(
-                        R.id.fragment_container,
+                        R.id.main_fragment_container,
                         ThirdFragment.newInstance(message),
                         ThirdFragment.THIRD_FRAGMENT_TAG
                     )
