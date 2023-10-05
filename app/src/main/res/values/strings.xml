@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">androidcourse</string>
+    <string name="et_text_hint">Enter text here...</string>
+    <string name="btn_submit_text">Submit</string>
+    <string name="btn_go_to_3_text">Go to 3</string>
+    <string name="btn_go_to_1_text">Go to 1</string>
+    <string name="third_fragment_empty_text">third fragment</string>
+    <string name="second_fragment_empty_text">second fragment</string>
 </resources>
