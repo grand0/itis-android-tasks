@@ -52,6 +52,7 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
 
             btnSave.setOnClickListener {
                 messagesViewModel.addMessage(binding.etText.text.toString())
+                binding.etText.setText("")
             }
         }
     }
