@@ -137,7 +137,6 @@ class StartFragment : Fragment(R.layout.fragment_start) {
                 validateAll()
             }
             btnStart.setOnClickListener {
-                println("TEMP TAG - ${etQuestionsNumber.text.toString().toInt()}")
                 parentFragmentManager.beginTransaction()
                     .replace(
                         R.id.fragment_container,
