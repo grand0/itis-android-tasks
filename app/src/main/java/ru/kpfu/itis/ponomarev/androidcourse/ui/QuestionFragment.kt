@@ -52,11 +52,22 @@ class QuestionFragment : Fragment(R.layout.fragment_question) {
 
     private fun updateChecked(position: Int) {
         answerAdapter?.answers?.let {
-            it.forEach { answer ->
-                answer.checked = false
+            var prevCheckedPos: Int? = null
+            for (i in it.indices) {
+                if (it[i].checked) {
+                    if (i == position) {
+                        return
+                    }
+                    it[i].checked = false
+                    prevCheckedPos = i
+                    break
+                }
             }
             it[position].checked = true
-            answerAdapter?.notifyDataSetChanged()
+            if (prevCheckedPos != null) {
+                answerAdapter?.notifyItemChanged(prevCheckedPos)
+            }
+            answerAdapter?.notifyItemChanged(position)
             (requireActivity().supportFragmentManager.findFragmentByTag(SurveyFragment.SURVEY_FRAGMENT_TAG) as QuestionAnsweredListener)
                 .questionAnswered(
                     questionPosition = requireArguments().getInt(ParamsKey.QUESTION_POSITION_KEY),
