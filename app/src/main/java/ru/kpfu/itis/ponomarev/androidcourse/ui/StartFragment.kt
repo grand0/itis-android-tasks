@@ -36,11 +36,6 @@ class StartFragment : Fragment(R.layout.fragment_start) {
     private fun init() {
         with(viewBinding) {
             etPhone.apply {
-                setOnClickListener {
-                    if (etPhone.text.isNullOrEmpty()) {
-                        etPhone.setText("79")
-                    }
-                }
                 setOnFocusChangeListener { _, hasFocus ->
                     if (hasFocus && etPhone.text.isNullOrEmpty()) {
                         etPhone.setText("79")
