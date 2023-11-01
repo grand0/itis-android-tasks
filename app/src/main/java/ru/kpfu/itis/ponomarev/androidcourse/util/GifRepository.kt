@@ -132,6 +132,14 @@ object GifRepository {
         feedList[position] = gif
     }
 
+    fun removeItem(position: Int) {
+        feedList.removeAt(position)
+    }
+
+    fun addItem(position: Int, gif: GifModel) {
+        feedList.add(position, gif)
+    }
+
     fun clear() {
         feedList.clear()
     }

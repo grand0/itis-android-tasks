@@ -4,4 +4,6 @@
     <string name="show_gifs_btn_text">Show gifs</string>
     <string name="gifs_count_et_error">Wrong number of gifs</string>
     <string name="add_gifs_btn_text">Add gifs</string>
+    <string name="undo_btn_text">Undo</string>
+    <string name="deleted_gif_info">Deleted %1$s</string>
 </resources>

@@ -6,9 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import ru.kpfu.itis.ponomarev.androidcourse.R
 import ru.kpfu.itis.ponomarev.androidcourse.adapter.FeedAdapter
 import ru.kpfu.itis.ponomarev.androidcourse.adapter.diffutil.GifDiffUtilItemCallback
@@ -17,6 +20,7 @@ import ru.kpfu.itis.ponomarev.androidcourse.model.GifCardModel
 import ru.kpfu.itis.ponomarev.androidcourse.model.GifModel
 import ru.kpfu.itis.ponomarev.androidcourse.ui.decoration.HorizontalMarginDecorator
 import ru.kpfu.itis.ponomarev.androidcourse.ui.decoration.VerticalMarginDecorator
+import ru.kpfu.itis.ponomarev.androidcourse.ui.holder.GifCardViewHolder
 import ru.kpfu.itis.ponomarev.androidcourse.util.GifRepository
 import ru.kpfu.itis.ponomarev.androidcourse.util.ParamsKey
 import ru.kpfu.itis.ponomarev.androidcourse.util.dp
@@ -42,6 +46,8 @@ class FeedFragment : Fragment() {
     }
 
     private fun init() {
+        val gifsCount = requireArguments().getInt(ParamsKey.GIFS_COUNT_KEY)
+
         feedAdapter = FeedAdapter(
             diffCallback = GifDiffUtilItemCallback(),
             glide = Glide.with(this),
@@ -49,34 +55,58 @@ class FeedFragment : Fragment() {
             onAddClicked = ::onAddClicked,
             onCardClicked = ::onCardClicked,
             onLikeClicked = ::onLikeClicked,
+            removeOnLongClick = gifsCount > 12,
+            onRemoveRequested = ::onRemoveRequested,
         )
 
-        val gifsCount = requireArguments().getInt(ParamsKey.GIFS_COUNT_KEY)
         if (GifRepository.getFeedList().isEmpty()) {
             GifRepository.initFeedList(gifsCount)
         }
         feedAdapter?.setItems(GifRepository.getFeedList())
 
         with (binding) {
-            val layoutManager = if (gifsCount <= 12)
-                LinearLayoutManager(
+            if (gifsCount <= 12) {
+                rvFeed.layoutManager = LinearLayoutManager(
                     requireContext(),
                     LinearLayoutManager.VERTICAL,
                     false
-                ).also {
-                    rvFeed.addItemDecoration(HorizontalMarginDecorator(offset = 16.dp(resources.displayMetrics)))
-                    rvFeed.addItemDecoration(VerticalMarginDecorator(offset = 8.dp(resources.displayMetrics)))
-                }
-            else
-                StaggeredGridLayoutManager(
+                )
+                rvFeed.addItemDecoration(HorizontalMarginDecorator(offset = 16.dp(resources.displayMetrics)))
+                rvFeed.addItemDecoration(VerticalMarginDecorator(offset = 8.dp(resources.displayMetrics)))
+
+                ItemTouchHelper(object : ItemTouchHelper.Callback() {
+                    override fun getMovementFlags(
+                        recyclerView: RecyclerView,
+                        viewHolder: RecyclerView.ViewHolder
+                    ): Int = when (viewHolder) {
+                        is GifCardViewHolder -> makeMovementFlags(0, ItemTouchHelper.LEFT)
+                        else -> 0
+                    }
+
+                    override fun onMove(
+                        recyclerView: RecyclerView,
+                        viewHolder: RecyclerView.ViewHolder,
+                        target: RecyclerView.ViewHolder
+                    ): Boolean {
+                        return false
+                    }
+
+                    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                        val position = viewHolder.adapterPosition
+                        (GifRepository.getFeedList()[position] as? GifCardModel)?.let { gif ->
+                            onRemoveRequested(position, gif)
+                        }
+                    }
+                }).attachToRecyclerView(rvFeed)
+            } else {
+                rvFeed.layoutManager = StaggeredGridLayoutManager(
                     2,
                     LinearLayoutManager.VERTICAL,
-                ).apply {
-                    rvFeed.addItemDecoration(HorizontalMarginDecorator(offset = 8.dp(resources.displayMetrics)))
-                    rvFeed.addItemDecoration(VerticalMarginDecorator(offset = 8.dp(resources.displayMetrics)))
-                }
+                )
+                rvFeed.addItemDecoration(HorizontalMarginDecorator(offset = 8.dp(resources.displayMetrics)))
+                rvFeed.addItemDecoration(VerticalMarginDecorator(offset = 8.dp(resources.displayMetrics)))
+            }
 
-            rvFeed.layoutManager = layoutManager
             rvFeed.adapter = feedAdapter
         }
     }
@@ -95,6 +125,16 @@ class FeedFragment : Fragment() {
         feedAdapter?.setItems(GifRepository.getFeedList())
     }
 
+    private fun removeGif(position: Int) {
+        GifRepository.removeItem(position)
+        feedAdapter?.removeItem(position)
+    }
+
+    private fun insertGif(position: Int, gif: GifCardModel) {
+        GifRepository.addItem(position, gif)
+        feedAdapter?.insertItem(position, gif)
+    }
+
     private fun onCardClicked(gif: GifCardModel) {
         parentFragmentManager.beginTransaction()
             .replace(
@@ -109,6 +149,26 @@ class FeedFragment : Fragment() {
     private fun onLikeClicked(position: Int, gif: GifModel) {
         GifRepository.setItem(position, gif)
         feedAdapter?.updateItem(position, gif)
+    }
+
+    private fun onRemoveRequested(position: Int, gif: GifCardModel) {
+        removeGif(position)
+        showUndoRemoveSnackbar(position, gif)
+    }
+
+    private fun showUndoRemoveSnackbar(position: Int, gif: GifCardModel) {
+        this.view?.let {
+            Snackbar
+                .make(
+                    it,
+                    getString(R.string.deleted_gif_info, gif.description),
+                    Snackbar.LENGTH_LONG
+                )
+                .setAction(R.string.undo_btn_text) {
+                    insertGif(position, gif)
+                }
+                .show()
+        }
     }
 
     override fun onDestroyView() {

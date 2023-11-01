@@ -1,6 +1,7 @@
 package ru.kpfu.itis.ponomarev.androidcourse.ui.holder
 
 import android.content.Context
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.google.android.material.chip.Chip
@@ -14,6 +15,8 @@ class GifCardViewHolder(
     private val glide: RequestManager,
     private val onCardClicked: (GifCardModel) -> Unit,
     private val onLikeClicked: (Int, GifModel) -> Unit,
+    private val removeOnLongClick: Boolean,
+    private val onRemoveRequested: (Int, GifCardModel) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private var item: GifCardModel? = null
@@ -22,6 +25,22 @@ class GifCardViewHolder(
         with (binding) {
             root.setOnClickListener {
                 item?.let(onCardClicked)
+            }
+            if (removeOnLongClick) {
+                root.setOnLongClickListener {
+                    overlayDelete.visibility = View.VISIBLE
+                    true
+                }
+                overlayDelete.setOnClickListener {
+                    item?.let {
+                        overlayDelete.visibility = View.GONE
+                        onRemoveRequested(adapterPosition, item!!)
+                    }
+                }
+                overlayDelete.setOnLongClickListener {
+                    overlayDelete.visibility = View.GONE
+                    true
+                }
             }
             ivLikeBtn.setOnClickListener {
                 item?.let {

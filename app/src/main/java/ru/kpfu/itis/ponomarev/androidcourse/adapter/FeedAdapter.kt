@@ -28,6 +28,8 @@ class FeedAdapter(
     private val onAddClicked: () -> Unit,
     private val onCardClicked: (GifCardModel) -> Unit,
     private val onLikeClicked: (Int, GifModel) -> Unit,
+    private val removeOnLongClick: Boolean,
+    private val onRemoveRequested: (Int, GifCardModel) -> Unit,
 ) : ListAdapter<GifModel, RecyclerView.ViewHolder>(diffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : RecyclerView.ViewHolder = when (viewType) {
@@ -43,6 +45,8 @@ class FeedAdapter(
             glide = glide,
             onCardClicked = onCardClicked,
             onLikeClicked = onLikeClicked,
+            removeOnLongClick = removeOnLongClick,
+            onRemoveRequested = onRemoveRequested,
         )
         else -> throw RuntimeException("Unknown view holder in FeedAdapter")
     }
@@ -86,6 +90,18 @@ class FeedAdapter(
     fun updateItem(position: Int, item: GifModel) {
         val list = currentList.toMutableList()
         list[position] = item
+        submitList(list)
+    }
+
+    fun removeItem(position: Int) {
+        val list = currentList.toMutableList()
+        list.removeAt(position)
+        submitList(list)
+    }
+
+    fun insertItem(position: Int, item: GifModel) {
+        val list = currentList.toMutableList()
+        list.add(position, item)
         submitList(list)
     }
 
