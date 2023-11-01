@@ -2,13 +2,14 @@ package ru.kpfu.itis.ponomarev.androidcourse.ui.holder
 
 import android.content.Context
 import android.view.View
+import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
-import com.google.android.material.chip.Chip
 import ru.kpfu.itis.ponomarev.androidcourse.R
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.ItemGifCardBinding
 import ru.kpfu.itis.ponomarev.androidcourse.model.GifCardModel
 import ru.kpfu.itis.ponomarev.androidcourse.model.GifModel
+import ru.kpfu.itis.ponomarev.androidcourse.util.ChipGenerator
 
 class GifCardViewHolder(
     private val binding: ItemGifCardBinding,
@@ -31,15 +32,21 @@ class GifCardViewHolder(
             if (removeOnLongClick) {
                 root.setOnLongClickListener {
                     overlayDelete.visibility = View.VISIBLE
+                    ivDelete.startAnimation(AnimationUtils.loadAnimation(binding.root.context, R.anim.grow))
+                    binding.root.startAnimation(AnimationUtils.loadAnimation(binding.root.context, R.anim.shake))
                     true
                 }
                 overlayDelete.setOnClickListener {
                     item?.let {
+                        ivDelete.clearAnimation()
+                        binding.root.clearAnimation()
                         overlayDelete.visibility = View.GONE
                         onRemoveRequested(adapterPosition, item!!)
                     }
                 }
                 overlayDelete.setOnLongClickListener {
+                    ivDelete.clearAnimation()
+                    binding.root.clearAnimation()
                     overlayDelete.visibility = View.GONE
                     true
                 }
@@ -64,12 +71,14 @@ class GifCardViewHolder(
                 .placeholder(R.drawable.ic_error)
                 .into(ivGif)
             tvDescription.text = item.description
+            tvDescription.isSelected = true // needed for marquee to work
             cgTags.removeAllViews()
             for (tag in item.tags) {
-                val chip = Chip(context).apply {
-                    text = tag
-                    setEnsureMinTouchTargetSize(false)
-                }
+                val chip = ChipGenerator.generate(
+                    context = context,
+                    text = tag,
+                    ensureMinTouchTargetSize = false
+                )
                 cgTags.addView(chip)
             }
             changeLikeStatus(item.isLiked)

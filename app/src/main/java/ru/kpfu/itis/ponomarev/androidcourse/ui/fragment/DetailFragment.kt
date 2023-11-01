@@ -12,10 +12,10 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.google.android.material.chip.Chip
 import ru.kpfu.itis.ponomarev.androidcourse.R
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.FragmentDetailBinding
 import ru.kpfu.itis.ponomarev.androidcourse.model.GifCardModel
+import ru.kpfu.itis.ponomarev.androidcourse.util.ChipGenerator
 import ru.kpfu.itis.ponomarev.androidcourse.util.ParamsKey
 
 class DetailFragment : Fragment() {
@@ -74,8 +74,10 @@ class DetailFragment : Fragment() {
                     .into(ivGif)
                 tvDescription.text = gif.description
                 for (tag in gif.tags) {
-                    val chip = Chip(context)
-                    chip.text = tag
+                    val chip = ChipGenerator.generate(
+                        context = requireContext(),
+                        text = tag,
+                    )
                     cgTags.addView(chip)
                 }
             }
