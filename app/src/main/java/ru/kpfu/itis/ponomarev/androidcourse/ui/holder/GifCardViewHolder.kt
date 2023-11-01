@@ -10,6 +10,7 @@ import ru.kpfu.itis.ponomarev.androidcourse.databinding.ItemGifCardBinding
 import ru.kpfu.itis.ponomarev.androidcourse.model.GifCardModel
 import ru.kpfu.itis.ponomarev.androidcourse.model.GifModel
 import ru.kpfu.itis.ponomarev.androidcourse.util.ChipGenerator
+import java.lang.Integer.min
 
 class GifCardViewHolder(
     private val binding: ItemGifCardBinding,
@@ -68,12 +69,13 @@ class GifCardViewHolder(
 
             glide
                 .load(item.url)
-                .placeholder(R.drawable.ic_error)
+                .placeholder(R.drawable.ic_loading_square)
+                .error(R.drawable.ic_error)
                 .into(ivGif)
             tvDescription.text = item.description
             tvDescription.isSelected = true // needed for marquee to work
             cgTags.removeAllViews()
-            for (tag in item.tags) {
+            for (tag in item.tags.subList(0, min(3, item.tags.size))) {
                 val chip = ChipGenerator.generate(
                     context = context,
                     text = tag,
