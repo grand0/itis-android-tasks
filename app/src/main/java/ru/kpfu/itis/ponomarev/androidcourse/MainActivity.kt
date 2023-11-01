@@ -3,7 +3,7 @@ package ru.kpfu.itis.ponomarev.androidcourse
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.ActivityMainBinding
-import ru.kpfu.itis.ponomarev.androidcourse.ui.MainFragment
+import ru.kpfu.itis.ponomarev.androidcourse.ui.fragment.MainFragment
 
 class MainActivity : AppCompatActivity() {
 
