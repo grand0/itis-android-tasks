@@ -35,13 +35,13 @@
             app:layout_constraintTop_toBottomOf="@id/iv_gif"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_like_btn"
-            android:textAppearance="@android:style/TextAppearance.Material.Headline"
+            android:textAppearance="@android:style/TextAppearance.Material.Large"
             tools:text="Some GIF by Someone" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_like_btn"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_margin="8dp"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintTop_toBottomOf="@id/iv_gif"

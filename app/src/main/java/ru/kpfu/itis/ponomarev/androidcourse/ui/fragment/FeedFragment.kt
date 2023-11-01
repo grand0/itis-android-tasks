@@ -1,10 +1,16 @@
 package ru.kpfu.itis.ponomarev.androidcourse.ui.fragment
 
 import android.os.Bundle
+import android.transition.ChangeBounds
+import android.transition.ChangeTransform
+import android.transition.Slide
+import android.transition.Transition
+import android.transition.TransitionSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,6 +48,12 @@ class FeedFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        postponeEnterTransition()
+
+        (view.parent as? ViewGroup)?.doOnPreDraw {
+            startPostponedEnterTransition()
+        }
+
         init()
     }
 
@@ -135,15 +147,30 @@ class FeedFragment : Fragment() {
         feedAdapter?.insertItem(position, gif)
     }
 
-    private fun onCardClicked(gif: GifCardModel) {
+    private fun onCardClicked(gif: GifCardModel, imageView: View) {
+        val fragment = DetailFragment.newInstance(gif, imageView.transitionName)
+        fragment.sharedElementEnterTransition = getSharedElementTransition()
+        fragment.sharedElementReturnTransition = getSharedElementTransition()
+        fragment.enterTransition = Slide()
+
         parentFragmentManager.beginTransaction()
+            .addSharedElement(imageView, imageView.transitionName)
             .replace(
                 R.id.fragment_container,
-                DetailFragment.newInstance(gif),
+                fragment,
                 DetailFragment.DETAIL_FRAGMENT_TAG
             )
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun getSharedElementTransition(): Transition {
+        val set = TransitionSet()
+        set.ordering = TransitionSet.ORDERING_TOGETHER
+        set.addTransition(ChangeBounds())
+//        set.addTransition(ChangeImageTransform())
+        set.addTransition(ChangeTransform())
+        return set
     }
 
     private fun onLikeClicked(position: Int, gif: GifModel) {

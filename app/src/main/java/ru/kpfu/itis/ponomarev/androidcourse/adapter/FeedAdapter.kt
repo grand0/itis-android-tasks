@@ -2,6 +2,7 @@ package ru.kpfu.itis.ponomarev.androidcourse.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -26,7 +27,7 @@ class FeedAdapter(
     private val glide: RequestManager,
     private val context: Context,
     private val onAddClicked: () -> Unit,
-    private val onCardClicked: (GifCardModel) -> Unit,
+    private val onCardClicked: (GifCardModel, View) -> Unit,
     private val onLikeClicked: (Int, GifModel) -> Unit,
     private val removeOnLongClick: Boolean,
     private val onRemoveRequested: (Int, GifCardModel) -> Unit,

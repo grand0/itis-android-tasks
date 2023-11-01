@@ -13,7 +13,7 @@ import ru.kpfu.itis.ponomarev.androidcourse.model.GifModel
 class GifCardViewHolder(
     private val binding: ItemGifCardBinding,
     private val glide: RequestManager,
-    private val onCardClicked: (GifCardModel) -> Unit,
+    private val onCardClicked: (GifCardModel, View) -> Unit,
     private val onLikeClicked: (Int, GifModel) -> Unit,
     private val removeOnLongClick: Boolean,
     private val onRemoveRequested: (Int, GifCardModel) -> Unit,
@@ -24,7 +24,9 @@ class GifCardViewHolder(
     init {
         with (binding) {
             root.setOnClickListener {
-                item?.let(onCardClicked)
+                item?.let {
+                    onCardClicked(it, ivGif)
+                }
             }
             if (removeOnLongClick) {
                 root.setOnLongClickListener {
@@ -55,6 +57,8 @@ class GifCardViewHolder(
     fun bindItem(item: GifCardModel, context: Context) {
         this.item = item
         with (binding) {
+            ivGif.transitionName = "item_image${item.id}"
+
             glide
                 .load(item.url)
                 .placeholder(R.drawable.ic_error)
