@@ -1,8 +1,10 @@
 package ru.kpfu.itis.ponomarev.androidcourse.ui.holder
 
 import android.content.Context
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.view.View
 import android.view.animation.AnimationUtils
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import ru.kpfu.itis.ponomarev.androidcourse.R
@@ -67,9 +69,11 @@ class GifCardViewHolder(
         with (binding) {
             ivGif.transitionName = "item_image${item.id}"
 
+            val loadingDrawable = AppCompatResources.getDrawable(context, R.drawable.ic_loading_square) as AnimatedVectorDrawable
+            loadingDrawable.start()
             glide
                 .load(item.url)
-                .placeholder(R.drawable.ic_loading_square)
+                .placeholder(loadingDrawable)
                 .error(R.drawable.ic_error)
                 .into(ivGif)
             tvDescription.text = item.description

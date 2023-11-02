@@ -1,14 +1,7 @@
-<animated-rotate xmlns:android="http://schemas.android.com/apk/res/android"
-    android:pivotX="50%"
-    android:pivotY="50%">
-    <vector
-        android:width="24dp"
-        android:height="24dp"
-        android:tint="#263238"
-        android:viewportWidth="24"
-        android:viewportHeight="24">
-        <path
-            android:fillColor="@android:color/white"
-            android:pathData="M3,3h18v18h-18z" />
-    </vector>
-</animated-rotate>
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_square">
+    <target
+        android:animation="@animator/rotation"
+        android:name="rotationGroup" />
+</animated-vector>
