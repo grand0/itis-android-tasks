@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">androidcourse</string>
+    <string name="app_name">Gif Feed</string>
+    <string name="gifs_count_ti_hint">Gifs count</string>
+    <string name="show_gifs_btn_text">Show gifs</string>
+    <string name="gifs_count_et_error">Wrong number of gifs</string>
+    <string name="add_gifs_btn_text">Add gifs</string>
+    <string name="undo_btn_text">Undo</string>
+    <string name="deleted_gif_info">Deleted %1$s</string>
 </resources>
