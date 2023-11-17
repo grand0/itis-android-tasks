@@ -21,4 +21,6 @@
     <string name="async_text">Async</string>
     <string name="stop_on_background_text">Stop on background</string>
     <string name="execute_btn_text">Execute</string>
+    <string name="no_connection_text">No connection</string>
+    <string name="airplane_mode_on_text">Airplane mode is on, some features are disabled</string>
 </resources>

@@ -6,12 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.FragmentMainBinding
+import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier
 import ru.kpfu.itis.ponomarev.androidcourse.util.NotificationsUtil
 
 class MainFragment : Fragment() {
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
+
+    private var airplaneModeCallbackId: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,11 +38,18 @@ class MainFragment : Fragment() {
                     text = etContents.text.toString(),
                 )
             }
+
+            airplaneModeCallbackId = AirplaneModeNotifier.registerCallback(requireContext()) { isOn ->
+                showNotifBtn.isEnabled = !isOn
+            }
         }
     }
 
     override fun onDestroyView() {
         _binding = null
+        airplaneModeCallbackId?.let {
+            AirplaneModeNotifier.unregisterCallback(it)
+        }
         super.onDestroyView()
     }
 }

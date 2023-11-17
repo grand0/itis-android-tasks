@@ -21,6 +21,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import ru.kpfu.itis.ponomarev.androidcourse.MainActivity
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.FragmentCoroutinesBinding
+import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier
 import ru.kpfu.itis.ponomarev.androidcourse.util.NotificationsUtil
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
@@ -29,6 +30,8 @@ class CoroutinesFragment : Fragment() {
 
     private var _binding: FragmentCoroutinesBinding? = null
     private val binding get() = _binding!!
+
+    private var airplaneModeCallbackId: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,11 +73,18 @@ class CoroutinesFragment : Fragment() {
                     stopOnBackground,
                 )
             }
+
+            airplaneModeCallbackId = AirplaneModeNotifier.registerCallback(requireContext()) { isOn ->
+                btnExecute.isEnabled = !isOn
+            }
         }
     }
 
     override fun onDestroyView() {
         _binding = null
+        airplaneModeCallbackId?.let {
+            AirplaneModeNotifier.unregisterCallback(it)
+        }
         super.onDestroyView()
     }
 }

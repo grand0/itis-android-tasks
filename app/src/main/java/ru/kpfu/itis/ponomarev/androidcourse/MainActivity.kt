@@ -1,7 +1,10 @@
 package ru.kpfu.itis.ponomarev.androidcourse
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -10,31 +13,32 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.NavigationUiSaveStateControl
-import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.NonCancellable.invokeOnCompletion
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.ActivityMainBinding
+import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier
+import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier.isAirplaneModeOn
+import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier.notify
 import ru.kpfu.itis.ponomarev.androidcourse.util.NotificationsUtil
 
 class MainActivity : AppCompatActivity() {
 
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
+
+    private var airplaneModeCallbackId: Int? = null
 
     private var job: Job? = null
     private var unfinishedCoroutines = 0
@@ -64,6 +68,17 @@ class MainActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationsUtil.createNotificationChannels(this)
+        }
+
+        val intentFilter = IntentFilter("android.intent.action.AIRPLANE_MODE")
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                notify(context)
+            }
+        }
+        registerReceiver(receiver, intentFilter)
+        airplaneModeCallbackId = AirplaneModeNotifier.registerCallback(this) { isOn ->
+            binding.overlayNoConnection.isGone = !isOn
         }
     }
 
@@ -184,6 +199,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         _binding = null
+        airplaneModeCallbackId?.let {
+            AirplaneModeNotifier.unregisterCallback(it)
+        }
         super.onDestroy()
     }
 
