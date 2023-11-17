@@ -31,7 +31,7 @@
                 <data
                     android:scheme="https"
                     android:host="ponomarev"
-                    android:pathAdvancedPattern="/itis/[0-9]{2}-[0-9]{3}" />
+                    android:path="/itis/11-201" />
             </intent-filter>
         </activity>
     </application>
