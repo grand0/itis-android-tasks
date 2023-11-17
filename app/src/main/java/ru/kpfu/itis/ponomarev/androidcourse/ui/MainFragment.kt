@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import ru.kpfu.itis.ponomarev.androidcourse.R
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.FragmentMainBinding
+import ru.kpfu.itis.ponomarev.androidcourse.util.NotificationsUtil
 
 class MainFragment : Fragment() {
 
@@ -27,7 +27,15 @@ class MainFragment : Fragment() {
     }
 
     private fun init() {
-
+        binding.apply {
+            showNotifBtn.setOnClickListener {
+                NotificationsUtil.sendNotification(
+                    context = requireContext(),
+                    title = etTitle.text.toString(),
+                    text = etContents.text.toString(),
+                )
+            }
+        }
     }
 
     override fun onDestroyView() {

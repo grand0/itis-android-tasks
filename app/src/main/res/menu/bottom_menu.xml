@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/mainFragment"
+        android:title="@string/home_menu_title"
+        android:icon="@drawable/baseline_home_24" />
+    <item
+        android:id="@+id/notificationSettingsFragment"
+        android:title="@string/notifications_menu_title"
+        android:icon="@drawable/baseline_notifications_24" />
+    <item
+        android:id="@+id/coroutinesFragment"
+        android:title="@string/coroutines_menu_title"
+        android:icon="@drawable/baseline_settings_24" />
+</menu>

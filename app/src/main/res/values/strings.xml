@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">androidcourse</string>
+    <string name="header_hint">Header</string>
+    <string name="contents_hint">Contents</string>
+    <string name="show_notification_btn_text">Show notification</string>
+    <string name="home_menu_title">Home</string>
+    <string name="notifications_menu_title">Notifications</string>
+    <string name="coroutines_menu_title">Coroutines</string>
+    <string name="notifications_permission_rationale">Allow notifications to be updated on current events</string>
+    <string name="allow_btn_text">Allow</string>
+    <string name="notifications_permission_settings_rationale">Allow notifications through settings to be updated on current events</string>
+    <string name="open_settings_btn_text">Open settings</string>
+    <string name="default_notification_channel_id">DEFAULT_NOTIFICATION_CHANNEL_ID</string>
+    <string name="default_notification_channel_name">Notifications</string>
+    <string name="importance_text">Importance</string>
+    <string name="visibility_text">Visibility</string>
+    <string name="big_text_text">Big text</string>
+    <string name="actions_text">Actions</string>
+    <string name="message_snackbar">Here is a message for you. Enjoy!</string>
+    <string name="coroutines_count_text">Coroutines count</string>
+    <string name="async_text">Async</string>
+    <string name="stop_on_background_text">Stop on background</string>
+    <string name="execute_btn_text">Execute</string>
 </resources>

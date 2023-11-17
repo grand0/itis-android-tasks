@@ -1,28 +1,197 @@
 package ru.kpfu.itis.ponomarev.androidcourse
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.NavigationUiSaveStateControl
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable.invokeOnCompletion
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.ActivityMainBinding
-import ru.kpfu.itis.ponomarev.androidcourse.ui.MainFragment
+import ru.kpfu.itis.ponomarev.androidcourse.util.NotificationsUtil
 
 class MainActivity : AppCompatActivity() {
 
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
 
+    private var job: Job? = null
+    private var unfinishedCoroutines = 0
+    private var stopOnBackground = false
+
+    @OptIn(NavigationUiSaveStateControl::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater).also {
             setContentView(it.root)
         }
 
-        supportFragmentManager.beginTransaction()
-            .replace(binding.fragmentContainer.id, MainFragment())
-            .commit()
+        val navController =
+            (supportFragmentManager.findFragmentById(R.id.host_fragment) as NavHostFragment)
+                .navController
+
+        NavigationUI.setupWithNavController(binding.bnvMain, navController, false)
+
+        val action = intent.getIntExtra("action", NO_ACTION)
+        onIntentAction(action)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestNotificationsPermissionWithRationale()
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationsUtil.createNotificationChannels(this)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val action = intent?.getIntExtra("action", NO_ACTION) ?: NO_ACTION
+        onIntentAction(action)
+    }
+
+    private fun onIntentAction(action: Int) {
+        when (action) {
+            ACTION_SHOW_MESSAGE -> {
+                Snackbar
+                    .make(
+                        binding.root,
+                        getString(R.string.message_snackbar),
+                        Snackbar.LENGTH_SHORT
+                    )
+                    .show()
+            }
+            ACTION_SHOW_SETTINGS -> {
+                (supportFragmentManager.findFragmentById(R.id.host_fragment) as NavHostFragment)
+                    .navController
+                    .apply {
+                        if (currentDestination?.id != R.id.notificationSettingsFragment) {
+                            popBackStack(R.id.mainFragment, false)
+                            navigate(R.id.action_mainFragment_to_notificationSettingsFragment)
+                        }
+                    }
+            }
+        }
+    }
+
+    private fun requestNotificationsPermissionWithRationale() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS)) {
+            Snackbar.make(binding.root, R.string.notifications_permission_rationale, Snackbar.LENGTH_LONG)
+                .setAction(R.string.allow_btn_text) { requestNotificationsPermission() }
+                .show()
+        } else {
+            requestNotificationsPermission()
+        }
+    }
+
+    private fun requestNotificationsPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), NOTIFICATIONS_PERMISSION_REQUEST_CODE)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        var allowed = false
+        when (requestCode) {
+            NOTIFICATIONS_PERMISSION_REQUEST_CODE -> {
+                allowed = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            }
+        }
+        if (!allowed) requestOpenApplicationSettings()
+    }
+
+    private fun requestOpenApplicationSettings() {
+        Snackbar.make(binding.root, R.string.notifications_permission_settings_rationale, Snackbar.LENGTH_LONG)
+            .setAction(R.string.open_settings_btn_text) { openApplicationSettings() }
+            .show()
+    }
+
+    private fun openApplicationSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
+        startActivity(intent)
+    }
+
+    fun startCoroutines(n: Int, async: Boolean, stopOnBackground: Boolean) {
+        unfinishedCoroutines = n
+        this.stopOnBackground = stopOnBackground
+        job = lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                repeat (n) {
+                    if (async) {
+                        launch { startCoroutine(it + 1, n) }
+                    } else {
+                        startCoroutine(it + 1, n)
+                    }
+                }
+            }
+        }.also {
+            it.invokeOnCompletion { cause ->
+                if (cause == null) {
+                    NotificationsUtil.sendNotification(
+                        context = this,
+                        title = "My job here is done"
+                    )
+                } else if (cause is CancellationException) {
+                    Log.e(javaClass.name, "Cancelled $unfinishedCoroutines coroutine(s).")
+                }
+                job = null
+            }
+        }
+    }
+
+    private suspend fun startCoroutine(index: Int, total: Int) {
+        delay(3000)
+        Log.e(javaClass.name, "Coroutine $index/$total finished.")
+        unfinishedCoroutines--
+    }
+
+    override fun onStop() {
+        if (stopOnBackground) {
+            job?.cancel(
+                "User left the app."
+            )
+        }
+        super.onStop()
     }
 
     override fun onDestroy() {
         _binding = null
         super.onDestroy()
+    }
+
+    companion object {
+        private const val NOTIFICATIONS_PERMISSION_REQUEST_CODE = 1
+
+        const val NO_ACTION = 0
+        const val ACTION_SHOW_MESSAGE = 1
+        const val ACTION_SHOW_SETTINGS = 2
     }
 }
