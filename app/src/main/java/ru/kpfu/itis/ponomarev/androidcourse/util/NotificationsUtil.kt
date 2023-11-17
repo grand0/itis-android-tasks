@@ -32,6 +32,30 @@ object NotificationsUtil {
         }
     }
 
+    fun sendCoroutinesFinishedNotification(context: Context) {
+        val channelId = getNotificationChannelId(context, Importance.URGENT)
+        val builder = NotificationCompat.Builder(
+            context,
+            channelId,
+        )
+            .setSmallIcon(R.drawable.baseline_notifications_24)
+            .setContentTitle(context.getString(R.string.coroutines_finished_text))
+
+        val intent = Intent(context, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val pIntent = PendingIntent.getActivity(
+            context,
+            3,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        builder.setContentIntent(pIntent)
+
+        val notificationManager = context
+            .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(0, builder.build())
+    }
+
     fun sendNotification(context: Context, title: String? = null, text: String? = null) {
         val channelId = getNotificationChannelId(context, NotificationSettings.importance)
         val builder = NotificationCompat.Builder(

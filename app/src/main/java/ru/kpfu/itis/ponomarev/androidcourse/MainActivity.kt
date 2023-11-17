@@ -176,10 +176,7 @@ class MainActivity : AppCompatActivity() {
         }.also {
             it.invokeOnCompletion { cause ->
                 if (cause == null) {
-                    NotificationsUtil.sendNotification(
-                        context = this,
-                        title = "My job here is done"
-                    )
+                    NotificationsUtil.sendCoroutinesFinishedNotification(this)
                 } else if (cause is CancellationException) {
                     Log.e(javaClass.name, "Cancelled $unfinishedCoroutines coroutine(s).")
                 }
