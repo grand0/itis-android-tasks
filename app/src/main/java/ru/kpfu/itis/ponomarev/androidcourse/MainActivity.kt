@@ -140,7 +140,13 @@ class MainActivity : AppCompatActivity() {
                 allowed = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
             }
         }
-        if (!allowed) requestOpenApplicationSettings()
+        if (!allowed) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS)) {
+                requestNotificationsPermissionWithRationale()
+            } else {
+                requestOpenApplicationSettings()
+            }
+        }
     }
 
     private fun requestOpenApplicationSettings() {
