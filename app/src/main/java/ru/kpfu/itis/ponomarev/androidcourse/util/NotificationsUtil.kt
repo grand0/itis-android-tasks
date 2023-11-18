@@ -38,7 +38,7 @@ object NotificationsUtil {
             context,
             channelId,
         )
-            .setSmallIcon(R.drawable.baseline_notifications_24)
+            .setSmallIcon(R.drawable.baseline_done_all_24)
             .setContentTitle(context.getString(R.string.coroutines_finished_text))
 
         val intent = Intent(context, MainActivity::class.java)
