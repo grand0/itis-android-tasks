@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">androidcourse</string>
+    <string name="app_name">Notifications &amp; Coroutines</string>
     <string name="header_hint">Header</string>
     <string name="contents_hint">Contents</string>
     <string name="show_notification_btn_text">Show notification</string>
