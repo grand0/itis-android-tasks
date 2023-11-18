@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
@@ -150,9 +151,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestOpenApplicationSettings() {
-        Snackbar.make(binding.root, R.string.notifications_permission_settings_rationale, Snackbar.LENGTH_LONG)
-            .setAction(R.string.open_settings_btn_text) { openApplicationSettings() }
-            .show()
+        val builder = AlertDialog.Builder(this)
+            .setTitle(R.string.allow_notifications_text)
+            .setMessage(R.string.notifications_permission_settings_rationale)
+            .setPositiveButton(R.string.open_settings_btn_text) { _, _ ->
+                openApplicationSettings()
+            }
+
+        builder.create().show()
     }
 
     private fun openApplicationSettings() {

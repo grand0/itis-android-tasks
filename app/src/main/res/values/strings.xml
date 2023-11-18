@@ -24,4 +24,5 @@
     <string name="no_connection_text">No connection</string>
     <string name="airplane_mode_on_text">Airplane mode is on, some features are disabled</string>
     <string name="coroutines_finished_text">My job here is done</string>
+    <string name="allow_notifications_text">Allow notifications</string>
 </resources>
