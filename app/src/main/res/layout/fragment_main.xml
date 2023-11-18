@@ -44,6 +44,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/show_notification_btn_text"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:icon="@drawable/outline_notifications_24"
+        app:iconGravity="textStart" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

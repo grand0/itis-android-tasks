@@ -127,6 +127,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:text="@string/execute_btn_text"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:icon="@drawable/outline_settings_24"
+        app:iconGravity="textStart" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -79,6 +80,11 @@ class MainActivity : AppCompatActivity() {
         registerReceiver(receiver, intentFilter)
         airplaneModeCallbackId = AirplaneModeNotifier.registerCallback(this) { isOn ->
             binding.overlayNoConnection.isGone = !isOn
+            if (isOn) (binding.vNoConnection.background as? AnimatedVectorDrawable)?.start()
+        }
+
+        binding.vNoConnection.setOnClickListener {
+            (it.background as? AnimatedVectorDrawable)?.start()
         }
     }
 

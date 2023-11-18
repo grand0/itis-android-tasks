@@ -1,6 +1,9 @@
 package ru.kpfu.itis.ponomarev.androidcourse.ui
 
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +14,11 @@ import android.view.animation.AnimationSet
 import android.view.animation.TranslateAnimation
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import com.google.android.material.checkbox.MaterialCheckBox
 import ru.kpfu.itis.ponomarev.androidcourse.MainActivity
+import ru.kpfu.itis.ponomarev.androidcourse.R
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.FragmentCoroutinesBinding
 import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier
 import ru.kpfu.itis.ponomarev.androidcourse.util.toPx
@@ -67,7 +72,6 @@ class CoroutinesFragment : Fragment() {
 
                 private fun launchAnimation(progress: Int, prev: Int) {
                     animInProgress = true
-
 
                     val anim = createTranslateAnimation(progress < prev)
                     val prevNextAnimSet = AnimationSet(true)
@@ -141,6 +145,17 @@ class CoroutinesFragment : Fragment() {
                     async,
                     stopOnBackground,
                 )
+
+//                btnExecute.text = getString(R.string.done_text)
+                var avd = AppCompatResources.getDrawable(requireContext(), R.drawable.avd_coroutines_checked) as AnimatedVectorDrawable
+                btnExecute.icon = avd
+                avd.start()
+                Handler(Looper.getMainLooper()).postDelayed({
+//                    btnExecute.text = getString(R.string.execute_btn_text)
+                    avd = AppCompatResources.getDrawable(requireContext(), R.drawable.avd_coroutines_unchecked) as AnimatedVectorDrawable
+                    btnExecute.icon = avd
+                    avd.start()
+                }, 1000)
             }
 
             airplaneModeCallbackId = AirplaneModeNotifier.registerCallback(requireContext()) { isOn ->
