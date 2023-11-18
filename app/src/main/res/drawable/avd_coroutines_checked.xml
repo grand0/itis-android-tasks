@@ -20,7 +20,7 @@
             </group>
             <clip-path
                 android:name="fill_mask"
-                android:pathData="M 0 22 L 24 22 L 24 22 L 0 22 Z"/>
+                android:pathData="M 12 8 C 9.79 8 8 9.79 8 12 C 8 14.21 9.79 16 12 16 C 14.21 16 16 14.21 16 12 C 16 9.79 14.21 8 12 8 Z M 12 14 C 10.9 14 10 13.1 10 12 C 10 10.9 10.9 10 12 10 C 13.1 10 14 10.9 14 12 C 14 13.1 13.1 14 12 14 Z"/>
             <group
                 android:name="filled_rot"
                 android:pivotX="12"
@@ -38,8 +38,8 @@
             <objectAnimator
                 android:propertyName="pathData"
                 android:duration="500"
-                android:valueFrom="M 0 22 L 24 22 L 24 22 L 0 22 Z"
-                android:valueTo="M 0 22 L 24 22 L 24 2 L 0 2 Z"
+                android:valueFrom="M 12 8 C 9.79 8 8 9.79 8 12 C 8 14.21 9.79 16 12 16 C 14.21 16 16 14.21 16 12 C 16 9.79 14.21 8 12 8 Z M 12 14 C 10.9 14 10 13.1 10 12 C 10 10.9 10.9 10 12 10 C 13.1 10 14 10.9 14 12 C 14 13.1 13.1 14 12 14 Z"
+                android:valueTo="M 12 2 C 6.79 2 2 6.79 2 12 C 2 17.21 6.79 22 12 22 C 17.21 22 22 17.21 22 12 C 22 6.79 17.21 2 12 2 Z M 12 14 C 10.9 14 10 13.1 10 12 C 10 10.9 10.9 10 12 10 C 13.1 10 14 10.9 14 12 C 14 13.1 13.1 14 12 14 Z"
                 android:valueType="pathType"
                 android:interpolator="@android:interpolator/fast_out_slow_in"/>
         </aapt:attr>
