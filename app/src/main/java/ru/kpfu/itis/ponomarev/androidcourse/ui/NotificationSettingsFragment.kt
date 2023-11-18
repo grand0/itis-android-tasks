@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.google.android.material.checkbox.MaterialCheckBox
+import ru.kpfu.itis.ponomarev.androidcourse.R
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.FragmentNotificationSettingsBinding
 import ru.kpfu.itis.ponomarev.androidcourse.util.Importance
 import ru.kpfu.itis.ponomarev.androidcourse.util.NotificationSettings
@@ -36,59 +36,30 @@ class NotificationSettingsFragment : Fragment() {
         binding.apply {
             ArrayAdapter(
                 requireContext(),
-                android.R.layout.simple_spinner_item,
+                R.layout.list_item,
                 Importance.values()
             ).also {
-                it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spImportance.adapter = it
-                spImportance.setSelection(NotificationSettings.importance.ordinal)
-                spImportance.onItemSelectedListener = object : OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        val selected = parent.getItemAtPosition(position) as Importance
-                        if (selected != NotificationSettings.importance) {
-                            NotificationSettings.importance = selected
-                        }
+                actvImportance.setAdapter(it)
+                actvImportance.setText(NotificationSettings.importance.text, false)
+                actvImportance.onItemClickListener =
+                    OnItemClickListener { parent, _, position, _ ->
+                        NotificationSettings.importance =
+                            parent.getItemAtPosition(position) as Importance
                     }
-
-                    override fun onNothingSelected(parent: AdapterView<*>) {
-                        val selected = Importance.HIGH
-                        if (selected != NotificationSettings.importance) {
-                            NotificationSettings.importance = selected
-                            parent.setSelection(selected.ordinal)
-                        }
-                    }
-                }
             }
 
             ArrayAdapter(
                 requireContext(),
-                android.R.layout.simple_spinner_item,
+                R.layout.list_item,
                 Visibility.values()
             ).also {
-                it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spVisibility.adapter = it
-                spVisibility.setSelection(NotificationSettings.visibility.ordinal)
-                spVisibility.onItemSelectedListener = object : OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
+                actvVisibility.setAdapter(it)
+                actvVisibility.setText(NotificationSettings.visibility.text, false)
+                actvVisibility.onItemClickListener =
+                    OnItemClickListener { parent, _, position, _ ->
                         NotificationSettings.visibility =
                             parent.getItemAtPosition(position) as Visibility
                     }
-
-                    override fun onNothingSelected(parent: AdapterView<*>) {
-                        NotificationSettings.visibility = Visibility.PUBLIC
-                        parent.setSelection(NotificationSettings.visibility.ordinal)
-                    }
-                }
             }
 
             cbBigText.checkedState = if (NotificationSettings.isBigText)
