@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/state_on"
+        android:state_checked="true"
+        android:drawable="@drawable/baseline_notifications_24" />
+
+    <item
+        android:id="@+id/state_off"
+        android:state_checked="false"
+        android:drawable="@drawable/outline_notifications_24" />
+
+    <transition
+        android:fromId="@id/state_off"
+        android:toId="@id/state_on"
+        android:drawable="@drawable/avd_notifications_checked" />
+
+    <transition
+        android:fromId="@id/state_on"
+        android:toId="@id/state_off"
+        android:drawable="@drawable/avd_notifications_unchecked" />
+
+</animated-selector>
