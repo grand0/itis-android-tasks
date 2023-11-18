@@ -8,11 +8,11 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
@@ -30,7 +30,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.ActivityMainBinding
 import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier
-import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier.isAirplaneModeOn
 import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier.notify
 import ru.kpfu.itis.ponomarev.androidcourse.util.NotificationsUtil
 
