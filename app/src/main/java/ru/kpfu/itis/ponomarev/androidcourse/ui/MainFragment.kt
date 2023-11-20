@@ -4,7 +4,6 @@ import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +18,7 @@ import ru.kpfu.itis.ponomarev.androidcourse.util.CreateNotificationSettings
 import ru.kpfu.itis.ponomarev.androidcourse.util.NotificationSettings
 import ru.kpfu.itis.ponomarev.androidcourse.util.NotificationsUtil
 import ru.kpfu.itis.ponomarev.androidcourse.util.setIcon
+import ru.kpfu.itis.ponomarev.androidcourse.util.setOnSurfaceTint
 
 class MainFragment : Fragment() {
 
@@ -55,10 +55,8 @@ class MainFragment : Fragment() {
                 if ((text.length >= NotificationsUtil.NOTIFICATION_BIG_TEXT_THRESHOLD || text.lines().size > 2) && !NotificationSettings.isBigText && !showedBigTextWarning) {
                     showedBigTextWarning = true
 
-                    val iconColor = TypedValue()
-                    requireContext().theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, iconColor, true)
                     val icon = AppCompatResources.getDrawable(requireContext(), R.drawable.baseline_lightbulb_24)
-                    icon?.setTint(iconColor.data)
+                    icon?.setOnSurfaceTint(requireContext())
 
                     Snackbar.make(root, getString(R.string.text_getting_long_message), Snackbar.LENGTH_SHORT)
                         .setIcon(icon)

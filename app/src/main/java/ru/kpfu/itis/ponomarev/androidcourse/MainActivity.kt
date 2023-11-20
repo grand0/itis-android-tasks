@@ -7,13 +7,16 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.drawable.AnimatedVectorDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.util.TypedValue
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -38,6 +41,7 @@ import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier.notify
 import ru.kpfu.itis.ponomarev.androidcourse.util.CoroutinesSettings
 import ru.kpfu.itis.ponomarev.androidcourse.util.NotificationsUtil
 import ru.kpfu.itis.ponomarev.androidcourse.util.setIcon
+import ru.kpfu.itis.ponomarev.androidcourse.util.setOnSurfaceTint
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,11 +54,25 @@ class MainActivity : AppCompatActivity() {
     private var unfinishedCoroutines = 0
     private var stopOnBackground = false
 
+    private var justChangedTheme = false
+
     @OptIn(NavigationUiSaveStateControl::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater).also {
             setContentView(it.root)
+        }
+
+        val prefs = getPreferences(Context.MODE_PRIVATE)
+        if (prefs.contains(getString(R.string.night_mode_key))) {
+            val nightMode = prefs.getBoolean(getString(R.string.night_mode_key), false)
+            AppCompatDelegate.setDefaultNightMode(
+                if (nightMode)
+                    AppCompatDelegate.MODE_NIGHT_YES
+                else
+                    AppCompatDelegate.MODE_NIGHT_NO
+            )
+            justChangedTheme = savedInstanceState?.getBoolean(getString(R.string.just_changed_theme_key), false) ?: false
         }
 
         val navController =
@@ -93,6 +111,66 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.toolbar_menu, menu)
+        menu?.findItem(R.id.action_night_mode)?.apply {
+            val icon: Drawable?
+            if (justChangedTheme) {
+                icon = AppCompatResources.getDrawable(
+                    this@MainActivity,
+                    if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+                        R.drawable.avd_light_to_night
+                    else
+                        R.drawable.avd_night_to_light
+                )
+            } else {
+                icon = AppCompatResources.getDrawable(
+                    this@MainActivity,
+                    if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES)
+                        R.drawable.baseline_dark_mode_24
+                    else
+                        R.drawable.baseline_light_mode_24
+                )
+            }
+            icon?.setOnSurfaceTint(this@MainActivity)
+            this.icon = icon
+            if (justChangedTheme) {
+                (icon as? AnimatedVectorDrawable)?.start()
+            }
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.action_night_mode -> {
+            justChangedTheme = true
+            if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+                with (getPreferences(Context.MODE_PRIVATE).edit()) {
+                    putBoolean(getString(R.string.night_mode_key), false)
+                    commit()
+                }
+
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            } else {
+                with (getPreferences(Context.MODE_PRIVATE).edit()) {
+                    putBoolean(getString(R.string.night_mode_key), true)
+                    commit()
+                }
+
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            }
+            true
+        }
+        else -> {
+            super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(getString(R.string.just_changed_theme_key), justChangedTheme)
+    }
+
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         val action = intent?.getIntExtra("action", NO_ACTION) ?: NO_ACTION
@@ -125,11 +203,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun requestNotificationsPermissionWithRationale() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS)) {
-            val iconColor = TypedValue()
-            theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, iconColor, true)
-
             val icon = AppCompatResources.getDrawable(this, R.drawable.avd_notifications_off)
-            icon?.setTint(iconColor.data)
+            icon?.setOnSurfaceTint(this)
 
             Snackbar.make(binding.root, R.string.notifications_permission_rationale, 5000)
                 .setAction(R.string.allow_btn_text) { requestNotificationsPermission() }
@@ -173,13 +248,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestOpenApplicationSettings() {
-        val iconColor = TypedValue()
-        theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, iconColor, true)
-
         val builder = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.allow_notifications_text)
             .setIcon(AppCompatResources.getDrawable(this, R.drawable.baseline_notifications_24)?.apply {
-                setTint(iconColor.data)
+                setOnSurfaceTint(this@MainActivity)
             })
             .setMessage(R.string.notifications_permission_settings_rationale)
             .setPositiveButton(R.string.open_settings_btn_text) { _, _ ->

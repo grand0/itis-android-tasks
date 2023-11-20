@@ -30,3 +30,9 @@ fun Snackbar.setIcon(icon: Drawable?): Snackbar {
     }
     return this
 }
+
+fun Drawable.setOnSurfaceTint(context: Context) {
+    val iconColor = TypedValue()
+    context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, iconColor, true)
+    setTint(iconColor.data)
+}
