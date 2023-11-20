@@ -12,15 +12,19 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import androidx.appcompat.app.AlertDialog
+import android.util.TypedValue
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.accessibility.AccessibilityEventCompat.setAction
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.NavigationUiSaveStateControl
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.BaseTransientBottomBar.BaseCallback
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +37,7 @@ import ru.kpfu.itis.ponomarev.androidcourse.databinding.ActivityMainBinding
 import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier
 import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier.notify
 import ru.kpfu.itis.ponomarev.androidcourse.util.NotificationsUtil
+import ru.kpfu.itis.ponomarev.androidcourse.util.setIcon
 
 class MainActivity : AppCompatActivity() {
 
@@ -120,8 +125,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun requestNotificationsPermissionWithRationale() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.POST_NOTIFICATIONS)) {
-            Snackbar.make(binding.root, R.string.notifications_permission_rationale, Snackbar.LENGTH_LONG)
+            val iconColor = TypedValue()
+            theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, iconColor, true)
+
+            val icon = AppCompatResources.getDrawable(this, R.drawable.avd_notifications_off)
+            icon?.setTint(iconColor.data)
+
+            Snackbar.make(binding.root, R.string.notifications_permission_rationale, 5000)
                 .setAction(R.string.allow_btn_text) { requestNotificationsPermission() }
+                .setIcon(icon)
+                .addCallback(object : BaseCallback<Snackbar>() {
+                    override fun onShown(transientBottomBar: Snackbar?) {
+                        (icon as? AnimatedVectorDrawable)?.start()
+                    }
+                })
                 .show()
         } else {
             requestNotificationsPermission()
@@ -156,8 +173,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestOpenApplicationSettings() {
-        val builder = AlertDialog.Builder(this)
+        val iconColor = TypedValue()
+        theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, iconColor, true)
+
+        val builder = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.allow_notifications_text)
+            .setIcon(AppCompatResources.getDrawable(this, R.drawable.baseline_notifications_24)?.apply {
+                setTint(iconColor.data)
+            })
             .setMessage(R.string.notifications_permission_settings_rationale)
             .setPositiveButton(R.string.open_settings_btn_text) { _, _ ->
                 openApplicationSettings()
