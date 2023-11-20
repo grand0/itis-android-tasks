@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.accessibility.AccessibilityEventCompat.setAction
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
@@ -36,6 +35,7 @@ import kotlinx.coroutines.withContext
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.ActivityMainBinding
 import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier
 import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier.notify
+import ru.kpfu.itis.ponomarev.androidcourse.util.CoroutinesSettings
 import ru.kpfu.itis.ponomarev.androidcourse.util.NotificationsUtil
 import ru.kpfu.itis.ponomarev.androidcourse.util.setIcon
 
@@ -194,16 +194,16 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun startCoroutines(n: Int, async: Boolean, stopOnBackground: Boolean) {
-        unfinishedCoroutines = n
-        this.stopOnBackground = stopOnBackground
+    fun startCoroutines() {
+        unfinishedCoroutines = CoroutinesSettings.count
+        this.stopOnBackground = CoroutinesSettings.stopOnBackground
         job = lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                repeat (n) {
-                    if (async) {
-                        launch { startCoroutine(it + 1, n) }
+                repeat (CoroutinesSettings.count) {
+                    if (CoroutinesSettings.async) {
+                        launch { startCoroutine(it + 1, CoroutinesSettings.count) }
                     } else {
-                        startCoroutine(it + 1, n)
+                        startCoroutine(it + 1, CoroutinesSettings.count)
                     }
                 }
             }

@@ -12,6 +12,8 @@ import ru.kpfu.itis.ponomarev.androidcourse.R
 
 object NotificationsUtil {
 
+    const val NOTIFICATION_BIG_TEXT_THRESHOLD = 90
+
     private fun getNotificationChannelId(context: Context, importance: Importance) =
         context.getString(R.string.default_notification_channel_id) + "_" + importance.name
 
@@ -56,15 +58,15 @@ object NotificationsUtil {
         notificationManager.notify(0, builder.build())
     }
 
-    fun sendNotification(context: Context, title: String? = null, text: String? = null) {
+    fun sendNotification(context: Context) {
         val channelId = getNotificationChannelId(context, NotificationSettings.importance)
         val builder = NotificationCompat.Builder(
             context,
             channelId,
         )
             .setSmallIcon(R.drawable.baseline_notifications_24)
-            .setContentTitle(title)
-            .setContentText(text)
+            .setContentTitle(CreateNotificationSettings.title)
+            .setContentText(CreateNotificationSettings.contents)
             .setVisibility(NotificationSettings.visibility.id)
             .setPublicVersion(
                 NotificationCompat.Builder(
@@ -72,14 +74,14 @@ object NotificationsUtil {
                     channelId
                 )
                     .setSmallIcon(R.drawable.baseline_notifications_24)
-                    .setContentTitle(title)
+                    .setContentTitle(CreateNotificationSettings.title)
                     .build()
             )
 
-        if (NotificationSettings.isBigText && (text?.length ?: 0) > 20) {
+        if (NotificationSettings.isBigText) {
             builder.setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText(text)
+                    .bigText(CreateNotificationSettings.contents)
             )
         }
 

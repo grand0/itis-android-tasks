@@ -16,11 +16,11 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
-import com.google.android.material.checkbox.MaterialCheckBox
 import ru.kpfu.itis.ponomarev.androidcourse.MainActivity
 import ru.kpfu.itis.ponomarev.androidcourse.R
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.FragmentCoroutinesBinding
 import ru.kpfu.itis.ponomarev.androidcourse.util.AirplaneModeNotifier
+import ru.kpfu.itis.ponomarev.androidcourse.util.CoroutinesSettings
 import ru.kpfu.itis.ponomarev.androidcourse.util.toPx
 
 class CoroutinesFragment : Fragment() {
@@ -45,6 +45,7 @@ class CoroutinesFragment : Fragment() {
 
     private fun init() {
         binding.apply {
+            sbCoroutinesCount.progress = CoroutinesSettings.count
             sbCoroutinesCount.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
                 private var prevProgress = sbCoroutinesCount.progress
 
@@ -57,6 +58,8 @@ class CoroutinesFragment : Fragment() {
                     progress: Int,
                     fromUser: Boolean
                 ) {
+                    CoroutinesSettings.count = progress
+
                     if (prevProgress == progress) return
 
                     val prev = prevProgress
@@ -137,21 +140,22 @@ class CoroutinesFragment : Fragment() {
 
             tvCoroutinesCount.text = sbCoroutinesCount.progress.toString()
 
-            btnExecute.setOnClickListener {
-                val async = cbAsync.checkedState == MaterialCheckBox.STATE_CHECKED
-                val stopOnBackground = cbStopOnBackground.checkedState == MaterialCheckBox.STATE_CHECKED
-                (requireActivity() as MainActivity).startCoroutines(
-                    sbCoroutinesCount.progress,
-                    async,
-                    stopOnBackground,
-                )
+            cbAsync.isChecked = CoroutinesSettings.async
+            cbAsync.setOnClickListener {
+                CoroutinesSettings.async = cbAsync.isChecked
+            }
+            cbStopOnBackground.isChecked = CoroutinesSettings.stopOnBackground
+            cbStopOnBackground.setOnClickListener {
+                CoroutinesSettings.stopOnBackground = cbStopOnBackground.isChecked
+            }
 
-//                btnExecute.text = getString(R.string.done_text)
+            btnExecute.setOnClickListener {
+                (requireActivity() as MainActivity).startCoroutines()
+
                 var avd = AppCompatResources.getDrawable(requireContext(), R.drawable.avd_coroutines_checked) as AnimatedVectorDrawable
                 btnExecute.icon = avd
                 avd.start()
                 Handler(Looper.getMainLooper()).postDelayed({
-//                    btnExecute.text = getString(R.string.execute_btn_text)
                     avd = AppCompatResources.getDrawable(requireContext(), R.drawable.avd_coroutines_unchecked) as AnimatedVectorDrawable
                     btnExecute.icon = avd
                     avd.start()
