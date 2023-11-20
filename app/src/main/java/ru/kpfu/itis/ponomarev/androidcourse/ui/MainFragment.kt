@@ -73,9 +73,11 @@ class MainFragment : Fragment() {
                 showNotifBtn.icon = avd
                 avd.start()
                 Handler(Looper.getMainLooper()).postDelayed({
-                    avd = AppCompatResources.getDrawable(requireContext(), R.drawable.avd_notifications_unchecked) as AnimatedVectorDrawable
-                    showNotifBtn.icon = avd
-                    avd.start()
+                    context?.let {
+                        avd = AppCompatResources.getDrawable(it, R.drawable.avd_notifications_unchecked) as AnimatedVectorDrawable
+                        showNotifBtn.icon = avd
+                        avd.start()
+                    }
                 }, 1000)
             }
 

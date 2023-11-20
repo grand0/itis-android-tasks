@@ -156,9 +156,11 @@ class CoroutinesFragment : Fragment() {
                 btnExecute.icon = avd
                 avd.start()
                 Handler(Looper.getMainLooper()).postDelayed({
-                    avd = AppCompatResources.getDrawable(requireContext(), R.drawable.avd_coroutines_unchecked) as AnimatedVectorDrawable
-                    btnExecute.icon = avd
-                    avd.start()
+                    context?.let {
+                        avd = AppCompatResources.getDrawable(it, R.drawable.avd_coroutines_unchecked) as AnimatedVectorDrawable
+                        btnExecute.icon = avd
+                        avd.start()
+                    }
                 }, 1000)
             }
 

@@ -81,31 +81,32 @@ class MainActivity : AppCompatActivity() {
 
         NavigationUI.setupWithNavController(binding.bnvMain, navController, false)
 
-        val action = intent.getIntExtra("action", NO_ACTION)
-        onIntentAction(action)
+        if (!justChangedTheme) {
+            val action = intent.getIntExtra("action", NO_ACTION)
+            onIntentAction(action)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestNotificationsPermissionWithRationale()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    requestNotificationsPermissionWithRationale()
+                }
             }
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationsUtil.createNotificationChannels(this)
-        }
-
-        val intentFilter = IntentFilter("android.intent.action.AIRPLANE_MODE")
-        val receiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                notify(context)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationsUtil.createNotificationChannels(this)
             }
+
+            val intentFilter = IntentFilter("android.intent.action.AIRPLANE_MODE")
+            val receiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    notify(context)
+                }
+            }
+            registerReceiver(receiver, intentFilter)
         }
-        registerReceiver(receiver, intentFilter)
         airplaneModeCallbackId = AirplaneModeNotifier.registerCallback(this) { isOn ->
             binding.overlayNoConnection.isGone = !isOn
             if (isOn) (binding.vNoConnection.background as? AnimatedVectorDrawable)?.start()
         }
-
         binding.vNoConnection.setOnClickListener {
             (it.background as? AnimatedVectorDrawable)?.start()
         }
@@ -136,6 +137,7 @@ class MainActivity : AppCompatActivity() {
             this.icon = icon
             if (justChangedTheme) {
                 (icon as? AnimatedVectorDrawable)?.start()
+                justChangedTheme = false
             }
         }
         return true
@@ -144,6 +146,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_night_mode -> {
             justChangedTheme = true
+            airplaneModeCallbackId?.let { AirplaneModeNotifier.unregisterCallback(it) }
             if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
                 with (getPreferences(Context.MODE_PRIVATE).edit()) {
                     putBoolean(getString(R.string.night_mode_key), false)
