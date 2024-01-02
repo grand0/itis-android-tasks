@@ -2,8 +2,12 @@ package ru.kpfu.itis.ponomarev.androidcourse
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import ru.kpfu.itis.ponomarev.androidcourse.config.AppConfig
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.ActivityMainBinding
-import ru.kpfu.itis.ponomarev.androidcourse.ui.MainFragment
+import ru.kpfu.itis.ponomarev.androidcourse.db.AppDatabase
+import ru.kpfu.itis.ponomarev.androidcourse.ui.fragment.HomeFragment
+import ru.kpfu.itis.ponomarev.androidcourse.ui.fragment.LoginFragment
+import ru.kpfu.itis.ponomarev.androidcourse.ui.fragment.ProfileFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,8 +20,20 @@ class MainActivity : AppCompatActivity() {
             setContentView(it.root)
         }
 
+        AppDatabase.init(this)
+        AppConfig.init(this)
+        AppConfig.restoreConfig()
+
+        val startFragment = if (AppConfig.userEmail == null || AppConfig.userPasswordHash == null) {
+            LoginFragment()
+        } else {
+            HomeFragment()
+        }
         supportFragmentManager.beginTransaction()
-            .replace(binding.fragmentContainer.id, MainFragment())
+            .replace(
+                R.id.fragment_container,
+                startFragment
+            )
             .commit()
     }
 
