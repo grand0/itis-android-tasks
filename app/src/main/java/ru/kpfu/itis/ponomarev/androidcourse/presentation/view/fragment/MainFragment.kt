@@ -20,7 +20,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import ru.kpfu.itis.ponomarev.androidcourse.R
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.FragmentMainBinding
@@ -108,7 +107,7 @@ class MainFragment : Fragment() {
                     }
                 }
                 launch {
-                    weatherViewModel.errorsChannel.consumeEach { error ->
+                    for (error in weatherViewModel.errorsChannel) {
                         val msg = error.message ?: getString(R.string.unknown_error)
                         Snackbar.make(
                             binding.root,
