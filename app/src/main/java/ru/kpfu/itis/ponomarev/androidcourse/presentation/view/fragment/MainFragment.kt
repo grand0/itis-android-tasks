@@ -1,5 +1,6 @@
 package ru.kpfu.itis.ponomarev.androidcourse.presentation.view.fragment
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -13,6 +14,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.channels.consumeEach
@@ -68,10 +73,34 @@ class MainFragment : Fragment() {
                                 tvWeatherCityLabel.isGone = false
                                 llWeather.isGone = false
                                 ivIcon.isGone = false
+                                pbIcon.isGone = false
                             }
 
                             Glide.with(this@MainFragment)
                                 .load(UrlProvider.getIconUrlForWeather(model))
+                                .error(R.drawable.outline_error)
+                                .listener(object : RequestListener<Drawable> {
+                                    override fun onLoadFailed(
+                                        e: GlideException?,
+                                        model: Any?,
+                                        target: Target<Drawable>,
+                                        isFirstResource: Boolean
+                                    ): Boolean {
+                                        binding.pbIcon.isGone = true
+                                        return false
+                                    }
+
+                                    override fun onResourceReady(
+                                        resource: Drawable,
+                                        model: Any,
+                                        target: Target<Drawable>?,
+                                        dataSource: DataSource,
+                                        isFirstResource: Boolean
+                                    ): Boolean {
+                                        binding.pbIcon.isGone = true
+                                        return false
+                                    }
+                                })
                                 .into(binding.ivIcon)
                             binding.tvWeatherCityLabel.text = getString(R.string.weather_in_city_label, model.city, model.sys.country)
                             binding.tvTemp.text = getString(R.string.temp_value_text, model.main.temp.toInt())

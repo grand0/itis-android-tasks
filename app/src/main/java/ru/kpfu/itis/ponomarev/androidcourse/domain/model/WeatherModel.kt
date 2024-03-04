@@ -2,6 +2,7 @@ package ru.kpfu.itis.ponomarev.androidcourse.domain.model
 
 import com.google.gson.annotations.SerializedName
 
+// maybe it is a better idea to separate models for different layers but this way is fine too ig
 data class WeatherModel(
     val weather: List<WeatherDataModel>,
     val main: MainDataModel,

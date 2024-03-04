@@ -6,6 +6,7 @@ import android.hardware.SensorManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import dagger.hilt.android.AndroidEntryPoint
+import ru.kpfu.itis.ponomarev.androidcourse.BuildConfig
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.ActivityMainBinding
 import ru.kpfu.itis.ponomarev.androidcourse.presentation.view.fragment.DebugFragment
 import ru.kpfu.itis.ponomarev.androidcourse.presentation.view.fragment.MainFragment
@@ -33,14 +34,16 @@ class MainActivity : AppCompatActivity() {
             .replace(binding.fragmentContainer.id, MainFragment())
             .commit()
 
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        accelerometer = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        shakeDetector.setOnShake { count ->
-            if (supportFragmentManager.findFragmentByTag(DebugFragment.DEBUG_FRAGMENT_TAG) == null && count >= 2) {
-                supportFragmentManager.beginTransaction()
-                    .replace(binding.fragmentContainer.id, DebugFragment(), DebugFragment.DEBUG_FRAGMENT_TAG)
-                    .addToBackStack(null)
-                    .commit()
+        if (BuildConfig.DEBUG) {
+            sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+            accelerometer = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+            shakeDetector.setOnShake { count ->
+                if (supportFragmentManager.findFragmentByTag(DebugFragment.DEBUG_FRAGMENT_TAG) == null && count >= 2) {
+                    supportFragmentManager.beginTransaction()
+                        .replace(binding.fragmentContainer.id, DebugFragment(), DebugFragment.DEBUG_FRAGMENT_TAG)
+                        .addToBackStack(null)
+                        .commit()
+                }
             }
         }
     }

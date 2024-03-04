@@ -52,6 +52,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_weather_city_label" />
 
+    <ProgressBar
+        android:id="@+id/pb_icon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_weather_city_label"
+        android:visibility="gone" />
+
     <LinearLayout
         android:id="@+id/ll_weather"
         android:layout_width="wrap_content"

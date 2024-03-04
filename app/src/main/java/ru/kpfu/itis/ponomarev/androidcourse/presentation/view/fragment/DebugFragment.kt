@@ -1,6 +1,5 @@
 package ru.kpfu.itis.ponomarev.androidcourse.presentation.view.fragment
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,19 +7,22 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.widget.TableRow
 import android.widget.TextView
-import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
-import ru.kpfu.itis.ponomarev.androidcourse.BuildConfig
-import ru.kpfu.itis.ponomarev.androidcourse.R
+import dagger.hilt.android.AndroidEntryPoint
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.FragmentDebugBinding
+import ru.kpfu.itis.ponomarev.androidcourse.di.qualifier.DebugInfoMap
 import ru.kpfu.itis.ponomarev.androidcourse.util.toPx
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class DebugFragment : Fragment() {
 
     private var _binding: FragmentDebugBinding? = null
     private val binding get() = _binding!!
 
-    private val infoMap = mutableMapOf<String, String>()
+    @DebugInfoMap
+    @Inject
+    lateinit var infoMap: Map<String, String>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,13 +34,6 @@ class DebugFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        infoMap["app_name"] = getString(R.string.app_name)
-        infoMap["base_url"] = BuildConfig.OPENWEATHER_API_BASE_URL
-        infoMap["version_name"] = BuildConfig.VERSION_NAME
-        infoMap["version_code"] = BuildConfig.VERSION_CODE.toString()
-        infoMap["device"] = "${Build.MANUFACTURER} ${Build.MODEL}"
-        infoMap["os"] = String.format("Android %s (API %d)", Build.VERSION.RELEASE, Build.VERSION.SDK_INT)
-
         init()
     }
 
