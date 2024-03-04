@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">androidcourse</string>
+    <string name="city_hint">City</string>
+    <string name="temp_value_text">%1$d°C</string>
+    <string name="weather_in_city_label">Weather in %1$s, %2$s</string>
+
+    <string name="bad_request_error">Bad request</string>
+    <string name="unauthorized_error">You are not authorized</string>
+    <string name="city_not_found_error">City not found</string>
+    <string name="too_many_requests_error">Too many requests</string>
+    <string name="server_error">Server error</string>
+    <string name="unknown_error">Unknown error</string>
 </resources>
