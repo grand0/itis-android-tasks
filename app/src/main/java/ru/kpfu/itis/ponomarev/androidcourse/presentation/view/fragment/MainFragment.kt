@@ -21,10 +21,10 @@ import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import ru.kpfu.itis.ponomarev.androidcourse.BuildConfig
 import ru.kpfu.itis.ponomarev.androidcourse.R
 import ru.kpfu.itis.ponomarev.androidcourse.databinding.FragmentMainBinding
 import ru.kpfu.itis.ponomarev.androidcourse.presentation.viewmodel.WeatherViewModel
-import ru.kpfu.itis.ponomarev.androidcourse.util.UrlProvider
 
 @AndroidEntryPoint
 class MainFragment : Fragment() {
@@ -76,7 +76,7 @@ class MainFragment : Fragment() {
                             }
 
                             Glide.with(this@MainFragment)
-                                .load(UrlProvider.getIconUrlForWeather(model))
+                                .load(BuildConfig.OPENWEATHER_API_ICON_URL_TEMPLATE.format(model.weather.first().icon))
                                 .error(R.drawable.outline_error)
                                 .listener(object : RequestListener<Drawable> {
                                     override fun onLoadFailed(

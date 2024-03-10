@@ -20,6 +20,9 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "OPENWEATHER_API_BASE_URL", "\"https://api.openweathermap.org/data/2.5/\"")
+        buildConfigField("String", "OPENWEATHER_API_ICON_URL_TEMPLATE", "\"https://openweathermap.org/img/wn/%s@2x.png\"")
     }
 
     buildFeatures {
